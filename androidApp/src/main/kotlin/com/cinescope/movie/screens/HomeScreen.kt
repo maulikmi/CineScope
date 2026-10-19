@@ -1,15 +1,17 @@
 package com.cinescope.movie.screens
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,21 +37,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.cinescope.movie.R
+import com.cinescope.movie.TmdbConstants
+import com.cinescope.movie.TmdbImageUrlBuilder
 import com.cinescope.movie.domain.movie.Movie
 import com.cinescope.movie.domain.movie.MovieStateHolder
+import org.jetbrains.compose.resources.imageResource
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    movieStateHolder: MovieStateHolder
+    movieStateHolder: MovieStateHolder,
+    onMovieClick: (Int) -> Unit
 ) {
     val uiState by movieStateHolder.uiState.collectAsState()
     val listState = rememberLazyListState()
@@ -73,13 +83,15 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
+                // Zero out the automatic window insets for the top bar
+                windowInsets = WindowInsets(0, 0, 0, 0)
             )
         },
-    ) { paddingValues ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(top = innerPadding.calculateTopPadding()),
             contentAlignment = Alignment.Center
         ) {
             when {
@@ -141,9 +153,10 @@ fun HomeScreen(
                         ) {
                             items(
                                 items = uiState.movies,
-                                key = { it.id }
                             ) { movie ->
-                                MovieRowItem(movie = movie)
+                                MovieRowItem(movie = movie){
+                                    onMovieClick(movie.id)
+                                }
                                 HorizontalDivider(
                                     modifier = Modifier.padding(top = 12.dp),
                                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -199,18 +212,20 @@ fun HomeScreen(
 
 @Composable
 fun MovieRowItem(
-    movie: Movie
+    movie: Movie,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
     ) {
         movie.posterPath?.let { posterPath ->
             AsyncImage(
-                model = "https://image.tmdb.org/t/p/w500$posterPath",
+                model = TmdbImageUrlBuilder.poster(movie.posterPath),
                 contentDescription = movie.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -246,10 +261,11 @@ fun MovieRowItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = "★",
-                    color = Color(0xFFFFC107),
-                    fontSize = 14.sp
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_star),
+                    modifier = Modifier.size(12.dp),
+                    tint = Color(0xFFF5C518),
+                    contentDescription = "Rating"
                 )
                 Text(
                     text = String.format(Locale.US, "%.1f", movie.rating),

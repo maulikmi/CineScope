@@ -97,21 +97,26 @@ struct MovieRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            if let posterPath = movie.posterPath,
-               let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .overlay(ProgressView())
+            if let posterPath = movie.posterPath {
+                let imageURL = TmdbImageUrlBuilder.shared.poster(path: posterPath, size: "w500")
+                if let url = URL(string: imageURL ?? "") {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay {
+                                ProgressView()
+                            }
+                    }
+                    .frame(width: 70, height: 100)
+                    .cornerRadius(8)
+                    .clipped()
                 }
-                .frame(width: 70, height: 100)
-                .cornerRadius(8)
-                .clipped()
             }
+
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(movie.title)

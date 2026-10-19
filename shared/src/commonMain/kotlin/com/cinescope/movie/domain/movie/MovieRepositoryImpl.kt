@@ -1,5 +1,7 @@
 package com.cinescope.movie.domain.movie
 
+import com.cinescope.movie.domain.movie.details.Genre
+import com.cinescope.movie.domain.movie.details.MovieDetails
 import com.cinescope.movie.network.TmdbApi
 
 class MovieRepositoryImpl(
@@ -38,5 +40,32 @@ class MovieRepositoryImpl(
 
             throw e
         }
+    }
+
+    override suspend fun getMovieDetails(
+        movieId: Int
+    ): MovieDetails {
+
+        println(">> MovieRepository: getting details for $movieId")
+
+        val response = api.getMovieDetails(movieId)
+
+        return MovieDetails(
+            id = response.id,
+            title = response.title,
+            overview = response.overview,
+            posterPath = response.posterPath,
+            backdropPath = response.backdropPath,
+            releaseDate = response.releaseDate,
+            rating = response.voteAverage,
+            voteCount = response.voteCount,
+            runtime = response.runtime,
+            genres = response.genres.map { genre ->
+                Genre(
+                    id = genre.id,
+                    name = genre.name
+                )
+            }
+        )
     }
 }

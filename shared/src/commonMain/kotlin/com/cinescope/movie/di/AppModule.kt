@@ -1,11 +1,13 @@
 package com.cinescope.movie.di
 
 import com.cinescope.movie.domain.movie.GetPopularMoviesUseCase
-import com.cinescope.movie.network.TmdbApi
-import com.cinescope.movie.network.createHttpClient
 import com.cinescope.movie.domain.movie.MovieRepository
 import com.cinescope.movie.domain.movie.MovieRepositoryImpl
 import com.cinescope.movie.domain.movie.MovieStateHolder
+import com.cinescope.movie.domain.movie.details.GetMovieDetailsUseCase
+import com.cinescope.movie.domain.movie.details.MovieDetailsStateHolder
+import com.cinescope.movie.network.TmdbApi
+import com.cinescope.movie.network.createHttpClient
 import org.koin.dsl.module
 
 fun appModule(
@@ -17,13 +19,23 @@ fun appModule(
     single {
         TmdbApi(get())
     }
-    single<MovieRepository>{
+    single<MovieRepository> {
         MovieRepositoryImpl(get())
     }
+
+    // Use cases
     single {
         GetPopularMoviesUseCase(get())
     }
     single {
+        GetMovieDetailsUseCase(get())
+    }
+
+    // StateHolders
+    single {
         MovieStateHolder(get())
+    }
+    factory {
+        MovieDetailsStateHolder(get())
     }
 }

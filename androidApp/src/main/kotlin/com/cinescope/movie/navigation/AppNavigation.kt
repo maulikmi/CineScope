@@ -11,18 +11,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.cinescope.movie.screens.HomeScreen
+import androidx.navigation.navArgument
 import com.cinescope.movie.domain.movie.MovieStateHolder
+import com.cinescope.movie.domain.movie.details.MovieDetailsStateHolder
 import com.cinescope.movie.screens.FavoritesScreen
+import com.cinescope.movie.screens.HomeScreen
+import com.cinescope.movie.screens.MovieDetailsScreen
 import com.cinescope.movie.screens.SearchScreen
 
 @Composable
 fun AppNavigation(
-    movieStateHolder: MovieStateHolder
+    movieStateHolder: MovieStateHolder,
+    movieDetailsStateHolder: MovieDetailsStateHolder
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -69,7 +74,11 @@ fun AppNavigation(
             composable(AppDestination.Home.route) {
                 HomeScreen(
                     movieStateHolder = movieStateHolder
-                )
+                ){ movieId ->
+                    navController.navigate(
+                        AppDestination.MovieDetails.createRoute(movieId)
+                    )
+                }
             }
 
             composable(AppDestination.Search.route) {
@@ -78,6 +87,26 @@ fun AppNavigation(
 
             composable(AppDestination.Favorites.route) {
                 FavoritesScreen()
+            }
+
+            composable(
+                route = AppDestination.MovieDetails.route,
+                arguments = listOf(
+                    navArgument("movieId") {
+                        type = NavType.IntType
+                    }
+                )) { backStackEntry ->
+
+                val movieId =
+                    backStackEntry.arguments?.getInt("movieId")
+                        ?: return@composable
+
+                MovieDetailsScreen(
+                    movieId = movieId,
+                    stateHolder = movieDetailsStateHolder
+                ){
+                    navController.popBackStack()
+                }
             }
         }
     }

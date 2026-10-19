@@ -6,4 +6,8 @@ sealed class AppDestination(
     data object Home : AppDestination("Home")
     data object Search : AppDestination("Search")
     data object Favorites : AppDestination("Favorites")
+
+    data object MovieDetails : AppDestination("movie/{movieId}") {
+        fun createRoute(movieId: Int) = "movie/$movieId"
+    }
 }
