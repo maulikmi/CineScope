@@ -2,6 +2,8 @@ package com.cinescope.movie.domain.movie
 
 import com.cinescope.movie.domain.movie.details.Genre
 import com.cinescope.movie.domain.movie.details.MovieDetails
+import com.cinescope.movie.domain.movie.details.ProductionCompany
+import com.cinescope.movie.domain.movie.details.ProductionCountry
 import com.cinescope.movie.network.TmdbApi
 
 class MovieRepositoryImpl(
@@ -64,6 +66,27 @@ class MovieRepositoryImpl(
                 Genre(
                     id = genre.id,
                     name = genre.name
+                )
+            },
+            tagline = response.tagline,
+            status = response.status,
+            budget = response.budget,
+            revenue = response.revenue,
+            originalLanguage = response.originalLanguage,
+            homepage = response.homepage,
+            imdbId = response.imdbId,
+            productionCompanies = response.productionCompanies.map { company ->
+                ProductionCompany(
+                    id = company.id,
+                    name = company.name,
+                    logoPath = company.logoPath,
+                    originCountry = company.originCountry
+                )
+            },
+            productionCountries = response.productionCountries.map { country ->
+                ProductionCountry(
+                    iso31661 = country.iso31661,
+                    name = country.name
                 )
             }
         )

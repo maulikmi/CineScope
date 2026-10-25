@@ -47,11 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.cinescope.movie.R
-import com.cinescope.movie.TmdbConstants
-import com.cinescope.movie.TmdbImageUrlBuilder
+import com.cinescope.movie.utils.TmdbImageUrlBuilder
 import com.cinescope.movie.domain.movie.Movie
 import com.cinescope.movie.domain.movie.MovieStateHolder
-import org.jetbrains.compose.resources.imageResource
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)

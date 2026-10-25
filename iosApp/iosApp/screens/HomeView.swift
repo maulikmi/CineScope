@@ -34,13 +34,16 @@ struct HomeView: View {
 
                     List {
                         ForEach(viewModel.movies, id: \.id) { movie in
-
-                            MovieRowView(movie: movie)
-                                .onAppear {
-                                    if movie.id == viewModel.movies.last?.id {
-                                        viewModel.loadNextPage()
-                                    }
+                            NavigationLink {
+                                MovieDetailsView(movieId: movie.id)
+                            } label: {
+                                MovieRowView(movie: movie)
+                            }
+                            .onAppear {
+                                if movie.id == viewModel.movies.last?.id {
+                                    viewModel.loadNextPage()
                                 }
+                            }
                         }
 
                         if viewModel.isLoadingMore {
