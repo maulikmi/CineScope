@@ -45,21 +45,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cinescope.movie.R
 import com.cinescope.movie.utils.TmdbImageUrlBuilder
 import com.cinescope.movie.domain.movie.Movie
 import com.cinescope.movie.domain.movie.MovieStateHolder
+import com.cinescope.movie.viewModels.HomeViewModel
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    movieStateHolder: MovieStateHolder,
     onMovieClick: (Int) -> Unit
 ) {
-    val uiState by movieStateHolder.uiState.collectAsState()
+    val viewModel : HomeViewModel = viewModel()
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+
 
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -67,7 +72,7 @@ fun HomeScreen(
         }.collect { lastVisibleIndex ->
             val totalItems = listState.layoutInfo.totalItemsCount
             if (lastVisibleIndex != null && lastVisibleIndex >= totalItems - 3) {
-                movieStateHolder.loadNextPage()
+                viewModel.loadNextPage()
             }
         }
     }
@@ -125,7 +130,7 @@ fun HomeScreen(
                             textAlign = TextAlign.Center
                         )
                         Button(
-                            onClick = { movieStateHolder.loadPopularMovies() }
+                            onClick = { viewModel.retryInitialLoad() }
                         ) {
                             Text("Retry")
                         }
@@ -138,7 +143,7 @@ fun HomeScreen(
                     PullToRefreshBox(
                         isRefreshing = uiState.isRefreshing,
                         onRefresh = {
-                            movieStateHolder.refreshMovies()
+                            viewModel.refreshMovies()
                         },
                         state = pullToRefreshState,
                         modifier = Modifier.fillMaxSize()
@@ -192,7 +197,7 @@ fun HomeScreen(
 
                                         Button(
                                             onClick = {
-                                                movieStateHolder.retryLoadNextPage()
+                                                viewModel.retryLoadNextPage()
                                             }
                                         ) {
                                             Text("Retry")

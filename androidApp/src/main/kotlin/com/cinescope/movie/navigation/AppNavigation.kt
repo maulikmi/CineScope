@@ -17,18 +17,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.cinescope.movie.domain.movie.MovieStateHolder
-import com.cinescope.movie.domain.movie.details.MovieDetailsStateHolder
 import com.cinescope.movie.screens.FavoritesScreen
 import com.cinescope.movie.screens.HomeScreen
 import com.cinescope.movie.screens.MovieDetailsScreen
 import com.cinescope.movie.screens.SearchScreen
 
 @Composable
-fun AppNavigation(
-    movieStateHolder: MovieStateHolder,
-    movieDetailsStateHolder: MovieDetailsStateHolder
-) {
+fun AppNavigation() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -73,8 +68,7 @@ fun AppNavigation(
         ) {
             composable(AppDestination.Home.route) {
                 HomeScreen(
-                    movieStateHolder = movieStateHolder
-                ){ movieId ->
+                ) { movieId ->
                     navController.navigate(
                         AppDestination.MovieDetails.createRoute(movieId)
                     )
@@ -103,8 +97,7 @@ fun AppNavigation(
 
                 MovieDetailsScreen(
                     movieId = movieId,
-                    stateHolder = movieDetailsStateHolder
-                ){
+                ) {
                     navController.popBackStack()
                 }
             }

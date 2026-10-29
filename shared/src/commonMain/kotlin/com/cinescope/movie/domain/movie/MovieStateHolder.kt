@@ -26,12 +26,18 @@ data class MovieUiState(
 class MovieStateHolder(
     private val getPopularMovies: GetPopularMoviesUseCase
 ) {
+    private val scopeJob = SupervisorJob()
     private val scope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Main)
+        CoroutineScope(scopeJob + Dispatchers.Main)
     private val _uiState =
         MutableStateFlow(MovieUiState())
     val uiState: StateFlow<MovieUiState> =
         _uiState.asStateFlow()
+
+
+    fun clear() {
+        scopeJob.cancel()
+    }
 
     fun loadPage(
         page: Int,

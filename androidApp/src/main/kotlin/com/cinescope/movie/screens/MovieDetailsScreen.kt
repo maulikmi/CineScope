@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,26 +42,29 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cinescope.movie.R
 import com.cinescope.movie.domain.movie.details.MovieDetails
-import com.cinescope.movie.domain.movie.details.MovieDetailsStateHolder
 import com.cinescope.movie.utils.CurrencyFormatter
 import com.cinescope.movie.utils.RuntimeFormatter
 import com.cinescope.movie.utils.TmdbImageUrlBuilder
+import com.cinescope.movie.viewModels.MovieDetailsViewModel
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    stateHolder: MovieDetailsStateHolder,
     onBack: () -> Unit
 ) {
-    val uiState by stateHolder.uiState.collectAsState()
+
+    val viewModel: MovieDetailsViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(movieId) {
-        stateHolder.loadMovieDetails(movieId)
+        viewModel.loadMovieDetails(movieId)
     }
 
     Scaffold(
@@ -133,7 +135,7 @@ fun MovieDetailsScreen(
 
                         Button(
                             onClick = {
-                                stateHolder.loadMovieDetails(movieId)
+                                viewModel.loadMovieDetails(movieId)
                             }
                         ) {
                             Text("Retry")
@@ -378,7 +380,9 @@ private fun MovieDetailsContent(
                         movie.productionCompanies.forEach { company ->
                             Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                        alpha = 0.5f
+                                    )
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {

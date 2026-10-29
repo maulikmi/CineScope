@@ -32,7 +32,7 @@ fun appModule(
     }
 
     // StateHolders
-    single {
+    factory {
         MovieStateHolder(get())
     }
     factory {
