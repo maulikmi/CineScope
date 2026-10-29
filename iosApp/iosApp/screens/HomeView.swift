@@ -25,7 +25,7 @@ struct HomeView: View {
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                         Button("Retry") {
-                            viewModel.loadMovies()
+                            viewModel.retryInitialLoad()
                         }
                         .buttonStyle(.borderedProminent)
                     }
@@ -88,7 +88,7 @@ struct HomeView: View {
             }
             .onAppear {
                 if viewModel.movies.isEmpty {
-                    viewModel.loadMovies()
+                    viewModel.ensureLoaded()
                 }
             }
         }

@@ -283,6 +283,8 @@ struct MovieDetailsView: View {
             viewModel.loadMovieDetails(movieID: movieId)
 
             await observationTask.value
+        }.onDisappear(){
+            viewModel.clear()
         }
     }
 }
