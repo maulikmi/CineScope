@@ -76,7 +76,13 @@ fun AppNavigation() {
             }
 
             composable(AppDestination.Search.route) {
-                SearchScreen()
+                SearchScreen(
+                    onMovieClick = { movieId ->
+                        navController.navigate(
+                            AppDestination.MovieDetails.createRoute(movieId)
+                        )
+                    }
+                )
             }
 
             composable(AppDestination.Favorites.route) {

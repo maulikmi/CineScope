@@ -5,6 +5,7 @@ import com.cinescope.movie.domain.movie.MovieResponseDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 
 class TmdbApi(
     private val client: HttpClient
@@ -33,5 +34,20 @@ class TmdbApi(
         return client
             .get("movie/$movieId")
             .body()
+    }
+
+    suspend fun searchMovies(
+        query: String,
+        page: Int = 1
+    ): MovieResponseDto {
+        require(query.isNotBlank()) {
+            "Search query cannot be empty"
+        }
+
+        return client.get("search/movie") {
+            parameter("query", query.trim())
+            parameter("page", page)
+            parameter("include_adult", false)
+        }.body()
     }
 }

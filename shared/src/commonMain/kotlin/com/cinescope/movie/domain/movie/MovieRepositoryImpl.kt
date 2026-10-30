@@ -91,4 +91,39 @@ class MovieRepositoryImpl(
             }
         )
     }
+
+    override suspend fun searchMovies(
+        query: String,
+        page: Int
+    ): MoviePage {
+        try {
+            val response = api.searchMovies(query,page)
+
+            println(">> MovieRepository: AFTER API CALL")
+            println(">> MovieRepository: results = ${response.results.size}")
+
+            return MoviePage(
+                page = response.page,
+                totalPages = response.totalPages,
+                totalResults = response.totalResults,
+                movies = response.results.map { dto ->
+                    Movie(
+                        id = dto.id,
+                        title = dto.title,
+                        overview = dto.overview,
+                        posterPath = dto.posterPath,
+                        backdropPath = dto.backdropPath,
+                        releaseDate = dto.releaseDate,
+                        rating = dto.voteAverage
+                    )
+                }
+            )
+        } catch (e: Exception) {
+            println(">> MovieRepository: ERROR")
+            println(">> MovieRepository: ${e::class.simpleName}")
+            println(">> MovieRepository: ${e.message}")
+
+            throw e
+        }
+    }
 }

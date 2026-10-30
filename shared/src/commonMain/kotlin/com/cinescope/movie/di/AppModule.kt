@@ -6,6 +6,8 @@ import com.cinescope.movie.domain.movie.MovieRepositoryImpl
 import com.cinescope.movie.domain.movie.MovieStateHolder
 import com.cinescope.movie.domain.movie.details.GetMovieDetailsUseCase
 import com.cinescope.movie.domain.movie.details.MovieDetailsStateHolder
+import com.cinescope.movie.domain.movie.search.SearchMoviesUseCase
+import com.cinescope.movie.domain.movie.search.SearchStateHolder
 import com.cinescope.movie.network.TmdbApi
 import com.cinescope.movie.network.createHttpClient
 import org.koin.dsl.module
@@ -30,6 +32,7 @@ fun appModule(
     single {
         GetMovieDetailsUseCase(get())
     }
+    factory { SearchMoviesUseCase(get()) }
 
     // StateHolders
     factory {
@@ -38,4 +41,5 @@ fun appModule(
     factory {
         MovieDetailsStateHolder(get())
     }
+    factory { SearchStateHolder(get()) }
 }
